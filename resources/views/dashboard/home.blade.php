@@ -13,7 +13,7 @@
             <!-- Quick Actions -->
             <div class="mb-8">
                 <div class="flex flex-wrap gap-4">
-                    <a href="{{ route('create-quiz') }}" class="flex-1 min-w-[200px] bg-blue-600 text-white p-4 rounded-lg shadow hover:bg-blue-700 transition">
+                    <a href="{{ route('create_quiz') }}" class="flex-1 min-w-[200px] bg-blue-600 text-white p-4 rounded-lg shadow hover:bg-blue-700 transition">
                         <i class="fas fa-plus mb-2 text-2xl"></i>
                         <h3 class="font-semibold">Create New Quiz</h3>
                         <p class="text-sm opacity-90">Start creating a new quiz</p>
