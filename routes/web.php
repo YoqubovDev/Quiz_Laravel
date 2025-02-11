@@ -11,7 +11,7 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 //Dashboard
 
-Route::get('/dashboard', [DashboardController::class, 'home'])->name('home');
+Route::get('/dashboard', [DashboardController::class, 'home'])->name('dashboard');
 Route::get('/dashboard/my-quizzes', [DashboardController::class, 'my_quizzes'])->name('my-quizzes');
 Route::get('/dashboard/create-quiz', [DashboardController::class, 'create_quiz'])->name('create_quiz');
 Route::get('/dashboard/statistics', [DashboardController::class, 'statistics'])->name('statistics');
