@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Result extends Model
 {
-    protected $fillable = ['quiz_id','user_id','started_at','finished_at'];
+    protected $fillable = [
+        'quiz_id',
+        'user_id',
+        'started_at',
+        'finished_at',
+    ];
 
     public function quiz()
     {

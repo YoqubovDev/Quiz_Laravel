@@ -13,10 +13,12 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::prefix('dashboard')->middleware(['auth'])->group(function () {
     Route::get('/', [DashboardController::class, 'home'])->name('dashboard');
-    Route::get('/my-quizzes', [DashboardController::class, 'my_quizzes'])->name('my-quizzes');
     Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
 
     //QuizCreate
+    Route::get('/quizzes', [QuizController::class, 'index'])->name('my-quizzes');
+    Route::get('/quizzes/{quiz}', [QuizController::class, 'edit'])->name('edit-quiz');
+    Route::get('/quizzes/{quiz}/update', [QuizController::class, 'edit'])->name('update-quiz');
     Route::get('/create-quiz', [QuizController::class, 'create'])->name('create_quiz');
     Route::post('/create-quiz', [QuizController::class, 'store'])->name('create_quiz');
 });

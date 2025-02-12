@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-use mysql_xdevapi\Result;
 use Symfony\Component\Console\Question\Question;
 
 class Quiz extends Model
@@ -26,4 +25,5 @@ class Quiz extends Model
     {
         return $this->hasMany(Result::class);
     }
+
 }

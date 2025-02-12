@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class QuizController extends Controller
 {
@@ -12,8 +13,11 @@ class QuizController extends Controller
      */
     public function index()
     {
-        //
+        return view('dashboard.my-quizzes',[
+            'quizzes'=>Quiz::withCount('questions')->get()
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -40,14 +44,21 @@ class QuizController extends Controller
             'title' => $validator['title'],
             'description' => $validator['description'],
             'time_limit' => $validator['timeLimit'],
+            'slug' => Str::slug(strtotime('now') .'/'. $validator['title']),
         ]);
-//        foreach ($validator['questions'] as $question) {
-//            $quiz->questions()->create([
-//                'question' => $question['question'],
-//                'answers' => $question['answers'],
-//                'correct_answer' => $question['correctAnswer'],
-//            ]);
-//        }
+
+        foreach ($validator['questions'] as $question) {
+            $questionItem= $quiz->questions()->create([
+                'name' => $question['quiz'],
+            ]);
+            foreach ($question['options'] as $optionKey=>$option) {
+                $questionItem->options()->create([
+                    'name' => $option,
+                    'is_correct' => $option['correct'] == $optionKey ? 1 : 0,
+                ]);
+            }
+        }
+        return to_route('my-quizzes');
     }
 
     /**
@@ -61,17 +72,24 @@ class QuizController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Quiz $quiz)
     {
-        //
+        return view('dashboard.edit-quiz',[
+            'quiz'=>$quiz
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Quiz $quiz)
     {
-        //
+        $quiz->title = $request['title'];
+        $quiz->description = $request['description'];
+        $quiz->time_limit = $request['timeLimit'];
+        $quiz->slug = Str::slug(strtotime('now') .'/'. $request['title']);
+        $quiz->save();
+        return to_route('my-quizzes');
     }
 
     /**
@@ -79,6 +97,6 @@ class QuizController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
     }
 }
