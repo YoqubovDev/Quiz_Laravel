@@ -75,12 +75,13 @@
                             <span class="text-sm text-gray-500">75% Completion Rate</span>
                         </div>
                         <div class="flex justify-between">
-                            <button class="text-indigo-600 hover:text-indigo-800">Edit</button>
+                            <a href="{{ route('edit-quiz',['quiz'=>$quiz->id]) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
                             <button class="text-green-600 hover:text-green-800">View Results</button>
-                            <button class="text-green-600 hover:text-green-100 rounded p-1 hover:bg-blue-500" onclick="share('{{ $quiz->slug }}')">
+                            <button class="text-green-600 hover:text-green-100 rounded p-1 hover:bg-blue-500"
+                                    onclick="move('{{ $quiz->slug }}')">
                                 Share
                             </button>
-                            <button class="text-red-600 hover:text-red-800">Delete</button>
+                            <a href="{{ route('delete-quiz', ['quiz'=>$quiz->id]) }}" class="text-red-600 hover:text-red-800">Delete</a>
                         </div>
                     </div>
                 @endforeach
@@ -88,15 +89,37 @@
         </main>
     </div>
     <script>
-        async function share(slug) {
+        async function move(slug) {
             try {
-                slug="{{env('APP_URL')}}"+'/take-quiz/'+slug;
-                await navigator.share({url: slug});
-                alter('Content copied to clipboard');
+                let shareUrl = "{{ url('take-quiz/') }}/"  + slug;
+                await navigator.clipboard.writeText(shareUrl);
+
+                let toast = document.createElement("div");
+                toast.className = "toast";
+                toast.innerText = "✅ Havola nusxalandi!";
+                document.body.appendChild(toast);
+
+                setTimeout(() => toast.remove(), 3000);
             } catch (err) {
-                console.error('Failed to copy: ', err);
+                console.error("Failed to copy:", err);
             }
         }
     </script>
+
+    <style>
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0.9;
+            z-index: 1000;
+        }
+    </style>
+
 </div>
 <x-main.footer></x-main.footer>
