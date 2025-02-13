@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="flex flex-col min-h-screen bg-gray-100">
+
 <!-- Navigation -->
 <x-navbar></x-navbar>
 
