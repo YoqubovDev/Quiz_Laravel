@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use function Pest\Laravel\delete;
 
 class QuizController extends Controller
 {
@@ -13,7 +14,7 @@ class QuizController extends Controller
      */
     public function index()
     {
-        return view('dashboard.my-quizzes',[
+        return view('dashboard.quizzes',[
             'quizzes'=>Quiz::withCount('questions')->get()
         ]);
     }
@@ -44,7 +45,7 @@ class QuizController extends Controller
             'title' => $validator['title'],
             'description' => $validator['description'],
             'time_limit' => $validator['timeLimit'],
-            'slug' => Str::slug(strtotime('now') .'/'. $validator['title']),
+            'slug' => Str::slug(strtotime('now') .'-'. $validator['title']),
         ]);
 
         foreach ($validator['questions'] as $question) {
@@ -54,11 +55,11 @@ class QuizController extends Controller
             foreach ($question['options'] as $optionKey=>$option) {
                 $questionItem->options()->create([
                     'name' => $option,
-                    'is_correct' => $option['correct'] == $optionKey ? 1 : 0,
+                    'is_correct' => $question['correct'] == $optionKey ? 1 : 0,
                 ]);
             }
         }
-        return to_route('my-quizzes');
+        return to_route('quizzes');
     }
 
     /**
@@ -74,8 +75,10 @@ class QuizController extends Controller
      */
     public function edit(Quiz $quiz)
     {
+//        dd($quiz->load('questions.options'));
         return view('dashboard.edit-quiz',[
-            'quiz'=>$quiz
+            'quiz'=>$quiz->load('questions.options'),
+
         ]);
     }
 
@@ -84,19 +87,47 @@ class QuizController extends Controller
      */
     public function update(Request $request, Quiz $quiz)
     {
+        $validator = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'timeLimit' => 'required|integer',
+            'questions' => 'required|array',
+        ]);
         $quiz->title = $request['title'];
         $quiz->description = $request['description'];
         $quiz->time_limit = $request['timeLimit'];
-        $quiz->slug = Str::slug(strtotime('now') .'/'. $request['title']);
+        $quiz->slug = Str::slug(strtotime('now') .'-'. $request['title']);
         $quiz->save();
-        return to_route('my-quizzes');
+        $quiz->questions()->delete();
+
+        foreach ($validator['questions'] as $question) {
+            $questionItem= $quiz->questions()->create([
+                'name' => $question['quiz'],
+            ]);
+            foreach ($question['options'] as $optionKey=>$option) {
+                $questionItem->options()->create([
+                    'name' => $option,
+                    'is_correct' => $option['correct'] == $optionKey ? 1 : 0,
+                ]);
+            }
+        }
+        return to_route('quizzes')->with('message','Quiz updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Quiz $quiz)
     {
+        $quiz->delete();
+        return to_route('quizzes');
+    }
 
+    public function takeQuiz(string $slug)
+    {
+        $quiz=Quiz::query()->where('slug',$slug)->with('questions.options')->first();
+        return view('take-quiz.take-quiz',[
+            'quiz'=>$quiz->load('questions.options'),
+        ]);
     }
 }
