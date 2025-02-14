@@ -15,7 +15,7 @@ class QuizController extends Controller
     public function index()
     {
         return view('dashboard.quizzes',[
-            'quizzes'=>Quiz::withCount('questions')->get()
+            'quizzes'=>Quiz::withCount('questions')->orderBy('created_at','desc')->get(),
         ]);
     }
 
@@ -107,7 +107,7 @@ class QuizController extends Controller
             foreach ($question['options'] as $optionKey=>$option) {
                 $questionItem->options()->create([
                     'name' => $option,
-                    'is_correct' => $option['correct'] == $optionKey ? 1 : 0,
+                    'is_correct' => $question['correct'] == $optionKey ? 1 : 0,
                 ]);
             }
         }

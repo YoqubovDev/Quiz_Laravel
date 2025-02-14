@@ -1,5 +1,5 @@
 <x-header></x-header>
-<script src="@vite('resources/js/add.js')"></script>
+@vite('resources/js/add.js')
 <body class="bg-gray-100">
 <div class="flex min-h-screen">
     <!-- Sidebar -->

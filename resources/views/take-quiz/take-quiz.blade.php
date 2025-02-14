@@ -123,7 +123,7 @@
                 </div>
             </div>
 
-            <a href="dashboard.html" class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <a href="{{ route('dashboard') }}" class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Return to Dashboard
             </a>
         </div>
