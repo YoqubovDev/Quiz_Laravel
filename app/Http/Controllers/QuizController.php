@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\Option;
+use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\Result;
 use Illuminate\Http\Request;
@@ -17,14 +19,13 @@ class QuizController extends Controller
     public function index()
     {
         $quiz=Quiz::withCount('questions')
-            ->where('user_id',auth()->user()->id)
+//            ->where('user_id',auth()->user()->id)
             ->orderBy('created_at','desc')
             ->paginate(10);
         return view('dashboard.quizzes',[
             'quizzes'=>$quiz,
         ]);
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -55,8 +56,9 @@ class QuizController extends Controller
         ]);
 
         foreach ($validator['questions'] as $question) {
-            $questionItem= $quiz->questions()->create([
-                'name' => $question['quiz'],
+            $questionItem= $quiz->questions()
+                ->create([
+                    'name' => $question['quiz'],
             ]);
             foreach ($question['options'] as $optionKey=>$option) {
                 $questionItem->options()->create([
@@ -131,7 +133,7 @@ class QuizController extends Controller
 
     public function startQuiz(string $slug)
     {
-        $quiz=Quiz::query()->where('slug',$slug)->with('questions.options')->first();
+        $quiz=Quiz::query()->where('slug',$slug)->first();
         return view('take-quiz.take-quiz',[
             'quiz'=>$quiz->load('questions.options'),
         ]);
@@ -142,11 +144,14 @@ class QuizController extends Controller
         $validator=$request->validate([
            'answer'=>'required|integer|exists:options,id',
         ]);
+
         $user_id=auth()->id();
+
         $quiz=Quiz::where('slug',$slug)->first();
+
         $result=Result::where('quiz_id',$quiz->id)
             ->where('user_id', $user_id )
-            ->first();
+                ->first();
 
         if (!$result)
         {
@@ -154,6 +159,7 @@ class QuizController extends Controller
                 'quiz_id'=>$quiz->id,
                 'user_id'=>$user_id,
                 'started_at'=>now(),
+                'finished_at'=>date('Y-m-d H:i:s', strtotime('+'.$quiz->time_limit.' minutes')),
             ]);
             Answer::create([
                 'result_id'=>$result->id,
@@ -161,19 +167,31 @@ class QuizController extends Controller
 
             ]);
             $quiz=$quiz->load('questions.options');
-            return view('take-quiz.take-quiz',[
-                'quiz'=>$quiz,
-            ]);
+
+//            return view('take-quiz.take-quiz',[
+//                'quiz'=>$quiz,
+//            ]);
         }
 
-        if (!$result->finished_at >= now())
+        if ($result->finished_at <= now())
         {
             return 'Sen ishlab bolgansan biratishka';
         }
-        Answer::create([
-            'result_id'=>$result->id,
-            'option_id'=>$validator['answer'],
+        $answers=Answer::query()
+            ->where('result_id',$result->id)
+                ->get();
+        $options=Option::query()
+            ->select('question_id')
+                ->whereIn('id', $answers->pluck('option_id'))->get();
+        $questions=Question::query()
+            ->where('quiz_id',$quiz->id)
+                ->whereNotIn('id', $options->pluck('question_id'))
+                    ->get();
 
+        return view('take-quiz.take-quiz',[
+            'quiz'=>$quiz,
+//            'answers'=>$answers,
+            'questions'=>$questions,
         ]);
 //        $quiz=Quiz::query()->where('id',)
     }

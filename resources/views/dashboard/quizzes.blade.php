@@ -86,7 +86,16 @@
                     </div>
                 @endforeach
             </div>
+
+
+{{--           <div class="row">--}}
+{{--               <div class="col-md-12">--}}
+{{--                   {{$quizzes->links('pagination::tailwind')}}--}}
+{{--               </div>--}}
+{{--           </div>--}}
+
         </main>
+            {{$quizzes->links()}}
     </div>
     <script>
         async function move(slug) {

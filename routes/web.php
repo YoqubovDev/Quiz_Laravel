@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function (){
         Route::post('/create-quiz', [QuizController::class, 'store'])->name('store_quiz');
         Route::post('/quizzes/{quiz}/update', [QuizController::class, 'update'])->name('update-quiz');
         Route::get('/quizzes/{quiz}/delete', [QuizController::class, 'destroy'])->name('delete-quiz');
+
     });
 //Quiz
     Route::get('take-quiz/{slug}',[QuizController::class,'startQuiz'])->name('start-quiz');
