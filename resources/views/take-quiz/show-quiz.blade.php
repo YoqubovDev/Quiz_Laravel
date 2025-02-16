@@ -30,7 +30,8 @@
                     <p class="text-gray-600">Time Limit</p>
                 </div>
             </div>
-            <form action id="" method="post">
+            <form action id="{{ route('show-quiz', ['quiz' => $quiz->slug]) }}" method="post">
+                @csrf
                 <button type="submit" id="start-btn"
                         class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                     Start Quiz
@@ -72,15 +73,13 @@
 </footer>
 
 <!-- Quiz JavaScript -->
-{{--<script>--}}
-{{--    let startBtn = document.getElementById('start-btn');--}}
-{{--    startBtn.onclick=()=>{--}}
-{{--        document.getElementById('start-card').classList.add('hidden');--}}
-{{--        document.getElementById('questionContainer').classList.remove('hidden');--}}
-{{--        let currentQuestion = getQuestion(currentQuestionIndex);--}}
-{{--        displayQuestion(currentQuestion);--}}
-{{--    }--}}
-{{--</script>--}}
+<script>
+    let startBtn = document.getElementById('start-btn');
+    startBtn.onclick=()=>{
+        document.getElementById('start-card').classList.add('hidden');
+        document.getElementById('questionContainer').classList.remove('hidden');
+    }
+</script>
 </body>
 </html>
 
