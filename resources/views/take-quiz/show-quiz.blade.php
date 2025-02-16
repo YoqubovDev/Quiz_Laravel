@@ -30,11 +30,12 @@
                     <p class="text-gray-600">Time Limit</p>
                 </div>
             </div>
-
-            <button id="start-btn"
-                    class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                Start Quiz
-            </button>
+            <form action id="" method="post">
+                <button type="submit" id="start-btn"
+                        class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Start Quiz
+                </button>
+            </form>
         </div>
     </div>
     <!-- Results Card -->
@@ -71,15 +72,15 @@
 </footer>
 
 <!-- Quiz JavaScript -->
-<script>
-    let startBtn = document.getElementById('start-btn');
-    startBtn.onclick=()=>{
-        document.getElementById('start-card').classList.add('hidden');
-        document.getElementById('questionContainer').classList.remove('hidden');
-        let currentQuestion = getQuestion(currentQuestionIndex);
-        displayQuestion(currentQuestion);
-    }
-</script>
+{{--<script>--}}
+{{--    let startBtn = document.getElementById('start-btn');--}}
+{{--    startBtn.onclick=()=>{--}}
+{{--        document.getElementById('start-card').classList.add('hidden');--}}
+{{--        document.getElementById('questionContainer').classList.remove('hidden');--}}
+{{--        let currentQuestion = getQuestion(currentQuestionIndex);--}}
+{{--        displayQuestion(currentQuestion);--}}
+{{--    }--}}
+{{--</script>--}}
 </body>
 </html>
 

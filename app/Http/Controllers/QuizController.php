@@ -19,9 +19,20 @@ class QuizController extends Controller
     public function index()
     {
         $quiz=Quiz::withCount('questions')
-//            ->where('user_id',auth()->user()->id)
-            ->orderBy('created_at','desc')
-            ->paginate(10);
+            ->where('user_id',auth()->user()->id);
+
+        if (request()->has('search'))
+        {
+            $quiz->where('title','like','%'.request('search').'%')
+                ->orWhere('description','like','%'.request('search').'%')
+                ->orWhere('slug','like','%'.request('search').'%');
+        }
+        if (request()->has('sort_by_date')){
+            $quiz->orderBy('id','desc');
+        }
+
+
+        $quiz=$quiz->paginate(6);
         return view('dashboard.quizzes',[
             'quizzes'=>$quiz,
         ]);
@@ -73,9 +84,22 @@ class QuizController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        //
+        $quiz=Quiz::query()->where('slug',$slug)->first();
+        $result=Result::query()
+            ->where('quiz_id', $quiz->id)
+                ->where('user_id', auth()->id())
+                    ->first();
+        if (!$result)
+        {
+            return view('take-quiz.show-quiz',
+                [
+                    'quiz'=>$quiz,
+                ]);
+        }
+        return 'Siz bu testni o\'tib bo\'lgansiz';
+
     }
 
     /**
@@ -134,7 +158,13 @@ class QuizController extends Controller
     public function startQuiz(string $slug)
     {
         $quiz=Quiz::query()->where('slug',$slug)->first();
-        return view('take-quiz.take-quiz',[
+        $result=Result::create([
+            'quiz_id'=>$quiz->id,
+            'user_id'=>auth()->id(),
+            'started_at'=>now(),
+            'finished_at'=>date('Y-m-d H:i:s', strtotime('+'.$quiz->time_limit.' minutes')),
+        ]);
+        return view('take-quiz.start-quiz',[
             'quiz'=>$quiz->load('questions.options'),
         ]);
     }
@@ -152,26 +182,11 @@ class QuizController extends Controller
         $result=Result::where('quiz_id',$quiz->id)
             ->where('user_id', $user_id )
                 ->first();
+        Answer::create([
+            'result_id' => $result->id,
+            'option_id' => $validator['answer'],
 
-        if (!$result)
-        {
-            $result=Result::create([
-                'quiz_id'=>$quiz->id,
-                'user_id'=>$user_id,
-                'started_at'=>now(),
-                'finished_at'=>date('Y-m-d H:i:s', strtotime('+'.$quiz->time_limit.' minutes')),
-            ]);
-            Answer::create([
-                'result_id'=>$result->id,
-                'option_id'=>$validator['answer'],
-
-            ]);
-            $quiz=$quiz->load('questions.options');
-
-//            return view('take-quiz.take-quiz',[
-//                'quiz'=>$quiz,
-//            ]);
-        }
+        ]);
 
         if ($result->finished_at <= now())
         {
@@ -186,13 +201,12 @@ class QuizController extends Controller
         $questions=Question::query()
             ->where('quiz_id',$quiz->id)
                 ->whereNotIn('id', $options->pluck('question_id'))
-                    ->get();
+                    -with('options')
+                        ->get();
 
         return view('take-quiz.take-quiz',[
             'quiz'=>$quiz,
-//            'answers'=>$answers,
             'questions'=>$questions,
         ]);
-//        $quiz=Quiz::query()->where('id',)
     }
 }
