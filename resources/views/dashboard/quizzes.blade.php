@@ -86,6 +86,10 @@
                     </div>
                 @endforeach
             </div>
+            <div class="my-4 flex justify-center items-center flex-col">
+                {{$quizzes->links()}}
+
+            </div>
 
 
 {{--           <div class="row">--}}
@@ -95,12 +99,11 @@
 {{--           </div>--}}
 
         </main>
-            {{$quizzes->links()}}
     </div>
     <script>
         async function move(slug) {
             try {
-                let shareUrl = "{{ url('take-quiz/') }}/"  + slug;
+                let shareUrl = "{{ url('show-quiz/') }}/"  + slug;
                 await navigator.clipboard.writeText(shareUrl);
 
                 let toast = document.createElement("div");
