@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\ResultController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'home'])->name('home');
@@ -13,8 +14,9 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::middleware('auth')->group(function (){
     Route::prefix('dashboard')->group(function () {
+
         Route::get('/', [DashboardController::class, 'home'])->name('dashboard');
-        Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
+        Route::get('/statistics', [ResultController::class, 'index'])->name('my-results');
 
         //QuizCreate
         Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes');
