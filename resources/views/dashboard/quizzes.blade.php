@@ -70,13 +70,12 @@
                         </div>
                         <div class="mb-4">
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 55%"></div>
                             </div>
                             <span class="text-sm text-gray-500">75% Completion Rate</span>
                         </div>
                         <div class="flex justify-between">
                             <a href="{{ route('edit-quiz',['quiz'=>$quiz->id]) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
-                            <button class="text-green-600 hover:text-green-800">View Results</button>
                             <button class="text-green-600 hover:text-green-100 rounded p-1 hover:bg-blue-500"
                                     onclick="move('{{ $quiz->slug }}')">
                                 Share

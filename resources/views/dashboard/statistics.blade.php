@@ -93,24 +93,18 @@
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
-                        <tr>
-                            <td class="px-6 py-4 text-sm text-gray-900">JavaScript Basics</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">2023-10-15</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">90%</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">25 min</td>
-                            <td class="px-6 py-4">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            </td>
-                        </tr>
-                        <twr>
-                            <td class="px-6 py-4 text-sm text-gray-900">HTML Advanced</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">2023-10-14</td>
-                            <td class="px-6 py-4 text-sm text-gray-900">85%</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">30 min</td>
-                            <td class="px-6 py-4">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            </td>
-                        </twr>
+                        @foreach($data as $item)
+                            <tr>
+                                <td class="px-6 py-4 text-sm text-gray-900"><a href="{{route('my-results', ['result' => $item['result']->id])}}">{{ $item['result']->quiz->title }}</a></td>
+                                <td class="px-6 py-4 text-sm text-gray-500"><a href="{{route('my-results', ['result' => $item['result']->id])}}">{{$item['result']->started_at}}</a></td>
+                                <td class="px-6 py-4 text-sm text-gray-900"><a href="{{route('my-results', ['result' => $item['result']->id])}}">{{ $item['result']->score }}%</a> </td>
+                                <td class="px-6 py-4 text-sm text-gray-500"><a href="{{route('my-results', ['result' => $item['result']->id])}}">{{ $item['result']->time_taken }}</a> </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"><a
+                                            href="{{route('my-results', ['result' => $item['result']->id])}}">{{ $item['result']->status }}</a></span>
+                                </td>
+                            </tr>
+                        @endforeach
                         </tbody>
                     </table>
                 </div>
