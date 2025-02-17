@@ -15,7 +15,7 @@
 <main class="flex-grow container mx-auto px-4 py-8">
     <div id="start-card" class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
         <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6" id="questionContainer" >
-            <form method ="POST" action="{{ route('take-quiz', ['quiz' => $quiz->slug]) }}">
+            <form method ="POST" action="{{ route('take-quiz', ['slug' => $quiz->slug]) }}">
                 @csrf
                 <!-- Quiz Header -->
                 <div class="flex justify-between items-center mb-6">
@@ -66,30 +66,7 @@
             </form>
         </div>
         <!-- Results Card -->
-        <div id="results-card" class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 hidden">
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
-                <h3 class="text-xl text-gray-700 mb-6">JavaScript Fundamentals Quiz</h3>
-
-                <div class="flex justify-center space-x-12 mb-8">
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-600" id="final-score">0/10</p>
-                        <p class="text-gray-600">Final Score</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-blue-600" id="time-taken">0:00</p>
-                        <p class="text-gray-600">Time Taken</p>
-                    </div>
-                </div>
-
-                <a href="{{ route('dashboard') }}" class="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    Return to Dashboard
-                </a>
-            </div>
-
-            <!-- Quiz JavaScript -->
-
-        </div><!-- Quiz JavaScript -->
+        <!-- Quiz JavaScript -->
 
     </div>
 </main>
@@ -164,31 +141,7 @@
                 alert('You are at the first question');
             }
         });
-        // document.getElementById('submit-quiz').addEventListener('click', () => {
-        //     if (currentQuestionIndex >= 2) {
-        //         currentQuestionIndex--;
-        //     }
-        //     console.log(currentQuestionIndex);
-        //     console.log(questions[currentQuestionIndex]);
-        //     questions.splice(currentQuestionIndex, 1);
-        //     let question = takeQuiz(currentQuestionIndex),
-        //         questionElement = document.getElementById('question'),
-        //         questionContainer = document.getElementById('questionContainer');
-        //     if (question) {
-        //         questionElement.textContent = question.question;
-        //         options.innerHTML = '';
-        //         question.options.forEach((option) => {
-        //             options.innerHTML += `
-        //         <label class="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-        //             <input type="radio" name="answer" class="h-4 w-4 text-blue-600" value="${option.id}">
-        //             <span class="ml-3">${option.option_text}</span>
-        //         </label>`
-        //         });
-        //     } else {
-        //         questionContainer.innerHTML = '';
-        //         document.getElementById('results-card').classList.remove('hidden');
-        //     }
-        // });
+
     });
 </script>
 </body>
