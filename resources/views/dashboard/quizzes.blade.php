@@ -1,18 +1,20 @@
 <x-header></x-header>
+<body class="bg-gray-100">
 <div class="flex min-h-screen">
     <!-- Sidebar -->
-<x-dashboard.sidebar></x-dashboard.sidebar>
+    <x-dashboard.sidebar></x-dashboard.sidebar>
     <!-- Main Content -->
-    <div class="flex-1">
+    <div class="flex-1 flex flex-col">
         <!-- Top Navigation -->
-<x-dashboard.navbar></x-dashboard.navbar>
+        <x-dashboard.navbar></x-dashboard.navbar>
+
         <!-- Content -->
         <main class="p-6">
             <!-- Header Section -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">My Quizzes</h2>
                 <div class="flex space-x-4">
-                    <a href="{{ route('create_quiz') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                    <a href="{{ route('create-quiz') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
                         Create New Quiz
                     </a>
                     <div class="flex border rounded-lg">
@@ -70,39 +72,30 @@
                         </div>
                         <div class="mb-4">
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-green-500 h-2 rounded-full" style="width: 55%"></div>
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
                             </div>
                             <span class="text-sm text-gray-500">75% Completion Rate</span>
                         </div>
                         <div class="flex justify-between">
-                            <a href="{{ route('edit-quiz',['quiz'=>$quiz->id]) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
-                            <button class="text-green-600 hover:text-green-100 rounded p-1 hover:bg-blue-500"
-                                    onclick="move('{{ $quiz->slug }}')">
-                                Share
-                            </button>
+                            <a href="{{ route('edit-quiz', ['quiz'=>$quiz->id]) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
+                            <button
+                                class="text-green-600 hover:text-green-100 rounded p-1 hover:bg-blue-500"
+                                onclick="move('{{ $quiz->slug }}')"
+                            >Share</button>
                             <a href="{{ route('delete-quiz', ['quiz'=>$quiz->id]) }}" class="text-red-600 hover:text-red-800">Delete</a>
                         </div>
                     </div>
                 @endforeach
             </div>
-            <div class="my-4 flex justify-center items-center flex-col">
-                {{$quizzes->links()}}
-
+            <div class="my-3 flex items-center flex-col">
+                {{ $quizzes->links() }}
             </div>
-
-
-{{--           <div class="row">--}}
-{{--               <div class="col-md-12">--}}
-{{--                   {{$quizzes->links('pagination::tailwind')}}--}}
-{{--               </div>--}}
-{{--           </div>--}}
-
         </main>
     </div>
     <script>
         async function move(slug) {
             try {
-                let shareUrl = "{{ url('show-quiz/') }}/"  + slug;
+                let shareUrl = "{{ url('/show-quiz/') }}/"  + slug;
                 await navigator.clipboard.writeText(shareUrl);
 
                 let toast = document.createElement("div");
