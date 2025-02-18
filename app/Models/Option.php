@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Option extends Model
 {
     protected $fillable = [
-        'name',
         'question_id',
+        'name',
         'is_correct',
         ];
 
-    public function question(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Question::class);
-    }
+//    public function question(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+//    {
+//        return $this->belongsTo(Question::class);
+//    }
 
 }

@@ -11,13 +11,13 @@ class Answer extends Model
         'option_id',
         ];
 
-    public function result()
-    {
-        return $this->belongsTo(Result::class);
-    }
-
-    public function option()
-    {
-        return $this->belongsTo(Option::class);
-    }
+//    public function result()
+//    {
+//        return $this->belongsTo(Result::class);
+//    }
+//
+//    public function option()
+//    {
+//        return $this->belongsTo(Option::class);
+//    }
 }
