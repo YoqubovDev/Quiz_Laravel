@@ -7,11 +7,11 @@ use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
 use App\Models\Result;
-use Date;
-use Dflydev\DotAccessData\Data;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
-use function Pest\Laravel\delete;
+use function Laravel\Prompts\select;
 
 class QuizController extends Controller
 {
@@ -20,26 +20,20 @@ class QuizController extends Controller
      */
     public function index()
     {
-        $quiz=Quiz::withCount('questions')
-            ->where('user_id',auth()->user()->id);
-
-        if (request()->has('search'))
-        {
-            $quiz->where('title','like','%'.request('search').'%')
-                ->orWhere('description','like','%'.request('search').'%')
-                ->orWhere('slug','like','%'.request('search').'%');
+        $quiz = Quiz::withCount('questions')
+            ->where('user_id', auth()->user()->id);
+        if (request()->has('search')) {
+            $quiz->where('title', 'like', '%' . request('search') . '%')
+                ->orWhere('description', 'like', '%' . request('search') . '%');
         }
-        if (request()->has('sort_by_date')){
-            $quiz->orderBy('id','desc');
+        if (request()->has('sort_by_date')) {
+            $quiz->orderBy('id', 'desc');
         }
-
-
-        $quiz=$quiz->paginate(6);
+        $quiz = $quiz->paginate(2);
         return view('dashboard.quizzes',[
-            'quizzes'=>$quiz,
+            'quizzes' =>$quiz
         ]);
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -55,31 +49,30 @@ class QuizController extends Controller
     {
         $validator = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
+            'timeLimit' => 'required|integer',
             'questions' => 'required|array',
-           'timeLimit' => 'required|integer',
         ]);
-
         $quiz = Quiz::create([
             'user_id' => auth()->id(),
-            'title' => $validator['title'],
-            'description' => $validator['description'],
-            'time_limit' => $validator['timeLimit'],
-            'slug' => Str::slug(strtotime('now') .'-'. $validator['title']),
+            'title'=>$validator['title'],
+            'description'=>$validator['description'],
+            'time_limit'=>$validator['timeLimit'],
+            'slug'=>Str::slug( strtotime('now') . '-'.  $request['title'])
         ]);
 
         foreach ($validator['questions'] as $question) {
-            $questionItem= $quiz->questions()
-                ->create([
-                    'name' => $question['quiz'],
+            $questionItem = $quiz->questions()->create([
+                'name'=>$question['quiz'],
             ]);
-            foreach ($question['options'] as $optionKey=>$option) {
+            foreach ($question['options'] as $optionKey => $option) {
                 $questionItem->options()->create([
-                    'name' => $option,
-                    'is_correct' => $question['correct'] == $optionKey ? 1 : 0,
+                    'name'=>$option,
+                    'is_correct'=>$question['correct'] == $optionKey ? 1 : 0,
                 ]);
             }
         }
+
         return to_route('quizzes');
     }
 
@@ -88,35 +81,29 @@ class QuizController extends Controller
      */
     public function show(string $slug)
     {
-        $quiz=Quiz::query()->where('slug',$slug)->first();
-        $result=Result::query()
+        $quiz = Quiz::where('slug', $slug)->first();
+        $result = Result::query()
             ->where('quiz_id', $quiz->id)
-                ->where('user_id', auth()->id())
-                    ->first();
-        if (!$result)
-        {
-            return view('take-quiz.show-quiz',
-                [
-                    'quiz'=>$quiz,
-                ]);
+            ->where('user_id', auth()->id())
+            ->first();
+        if (!$result) {
+            return view('take-quiz.show-quiz',[
+                'quiz' => $quiz
+            ]);
         }
-
-        $answers=Answer::query()
-            ->where('result_id',$result->id)
+        $answers = Answer::query()
+            ->where('result_id', $result->id)
             ->get();
-
-        $correctOptionsCount=Option::query()
+        $correctOptionCount = Option::query()
             ->select('question_id')
-            ->where('is_correct',1)
+            ->where('is_correct', 1)
             ->whereIn('id', $answers->pluck('option_id'))
             ->count();
-
-        return view('take-quiz.show-quiz',[
-            'quiz'=>$quiz->withCount('questions')->first(),
-            'correctOptionsCount'=>$correctOptionsCount,
-            'time_taken'=>Date::createFromFormat('Y-m-d H:i:s',$result->finished_at)->diff($result->started_at),
+        return view('take-quiz.result-quiz', [
+            'quiz' => $quiz->withCount('questions')->first(),
+            'correctOptionCount' => $correctOptionCount,
+            'time_taken' => Date::createFromFormat('Y-m-d H:i:s', $result->finished_at)->diff($result->started_at),
         ]);
-
     }
 
     /**
@@ -124,40 +111,44 @@ class QuizController extends Controller
      */
     public function edit(Quiz $quiz)
     {
-//        dd($quiz->load('questions.options'));
         return view('dashboard.edit-quiz',[
-            'quiz'=>$quiz->load('questions.options'),
-
+            'quiz' => $quiz->load('questions.options'),
         ]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Quiz $quiz)
     {
         $validator = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'description' => 'required|string',
             'timeLimit' => 'required|integer',
-            'questions' => 'required|array',
+            'questions' => 'required|array'
         ]);
+
         $quiz->title = $request['title'];
         $quiz->description = $request['description'];
         $quiz->time_limit = $request['timeLimit'];
-        $quiz->slug = Str::slug(strtotime('now') .'-'. $request['title']);
-        $quiz->save();
-        $quiz->questions()->delete();
+        $quiz->slug = Str::slug( strtotime('now') . '-'.  $request['title']);
 
+        $quiz->save();
+
+        $quiz->questions()->delete();
         foreach ($validator['questions'] as $question) {
-            $questionItem= $quiz->questions()->create([
-                'name' => $question['quiz'],
+            $questionItem = $quiz->questions()->create([
+                'name'=>$question['quiz'],
             ]);
-            foreach ($question['options'] as $optionKey=>$option) {
+            foreach ($question['options'] as $optionKey => $option) {
                 $questionItem->options()->create([
-                    'name' => $option,
-                    'is_correct' => $question['correct'] == $optionKey ? 1 : 0,
+                    'name'=>$option,
+                    'is_correct'=>$question['correct'] == $optionKey ? 1 : 0,
                 ]);
             }
         }
-        return to_route('quizzes')->with('message','Quiz updated successfully');
+
+        return to_route('quizzes')->with('message', 'Quiz updated successfully');
     }
 
     /**
@@ -168,88 +159,81 @@ class QuizController extends Controller
         $quiz->delete();
         return to_route('quizzes');
     }
-
-    public function startQuiz(string $slug)
-    {
-        $quiz=Quiz::query()->where('slug',$slug)->first();
-        $result=Result::create([
-            'quiz_id'=>$quiz->id,
-            'user_id'=>auth()->id(),
-            'started_at'=>now(),
-            'finished_at'=>date('Y-m-d H:i:s', strtotime('+'.$quiz->time_limit.' minutes')),
+    public function startQuiz(string $slug){
+        $quiz = Quiz::query()->where('slug', $slug)->first();
+        $result = Result::create([
+            'quiz_id' => $quiz->id,
+            'user_id' => auth()->id(),
+            'started_at' => now(),
+            'finished_at' => date('Y-m-d H:i:s', strtotime('+' . $quiz->time_limit . ' minutes')),
         ]);
+
         return view('take-quiz.start-quiz',[
-            'quiz'=>$quiz->load('questions.options'),
+            'quiz' => $quiz->load('questions.options'),
         ]);
     }
-
     public function takeQuiz(string $slug, Request $request)
     {
-        $validator=$request->validate([
-           'answer'=>'required|integer|exists:options,id',
+        $validator = $request->validate([
+            'answer' => 'required|integer|exists:options,id',
         ]);
 
-        $user_id=auth()->id();
-        $quiz=Quiz::where('slug',$slug)->first();
+        $user_id = auth()->id();
+        $quiz = Quiz::where('slug', $slug)->first();
 
-        $result=Result::where('quiz_id',$quiz->id)
-            ->where('user_id', $user_id )
-                ->first();
-        if ($result->finished_at <= now())
-        {
-            $answers=Answer::query()
-                ->where('result_id',$result->id)
+        $result = Result::where('quiz_id', $quiz->id)
+            ->where('user_id', $user_id)
+            ->first();
+        if ($result->finished_at <= now()) {
+            $answers = Answer::query()
+                ->where('result_id', $result->id)
                 ->get();
-
-            $correctOptionsCount=Option::query()
+            $correctOptionCount = Option::query()
                 ->select('question_id')
-                ->where('is_correct',1)
+                ->where('is_correct', 1)
                 ->whereIn('id', $answers->pluck('option_id'))
                 ->count();
-            return view('take-quiz.result-quiz',[
-                'quiz'=>$quiz->withCount('questions')->first(),
-                'correctOptionsCount'=>$correctOptionsCount,
-                'time_taken'=>Date::createFromFormat('Y-m-d H:i:s',$result->finished_at)->diff($result->started_at),
+            return view('take-quiz.result-quiz', [
+                'quiz' => $quiz->withCount('questions')->first(),
+                'correctOptionCount' => $correctOptionCount,
+                'time_taken' => Date::createFromFormat('Y-m-d H:i:s', $result->finished_at)->diff($result->started_at),
             ]);
         }
-        $result->finished_at=now();
+        $result->finished_at = now();
         $result->save();
+
         Answer::create([
             'result_id' => $result->id,
             'option_id' => $validator['answer'],
-
         ]);
 
-
-        $answers=Answer::query()
-            ->where('result_id',$result->id)
-                ->get();
-        $options=Option::query()
+        $answers = Answer::query()
+            ->where('result_id', $result->id)
+            ->get();
+        $options = Option::query()
             ->select('question_id')
-                ->whereIn('id', $answers->pluck('option_id'))
-                    ->get();
-        $questions=Question::query()
-            ->where('quiz_id',$quiz->id)
-                ->whereNotIn('id', $options->pluck('question_id'))
-                    -with('options')
-                        ->get();
-
+            ->whereIn('id', $answers->pluck('option_id'))
+            ->get();
+        $questions = Question::query()
+            ->where('quiz_id', $quiz->id)
+            ->whereNotIn('id', $options->pluck('question_id'))
+            ->with('options')
+            ->get();
         if (count($questions)) {
             return view('take-quiz.take-quiz', [
                 'quiz' => $quiz,
                 'questions' => $questions,
             ]);
         }
-        $correctOptionsCount=Option::query()
+        $correctOptionCount = Option::query()
             ->select('question_id')
-            ->where('is_correct',1)
-                ->whereIn('id', $answers->pluck('option_id'))
-                    ->count();
-
-        return view('take-quiz.result-quiz',[
-            'quiz'=>$quiz->withCount('questions')->first(),
-            'correctOptionsCount'=>$correctOptionsCount,
-            'time_taken'=>Date::createFromFormat('Y-m-d H:i:s',$result->finished_at)->diff($result->started_at),
+            ->where('is_correct', 1)
+            ->whereIn('id', $answers->pluck('option_id'))
+            ->count();
+        return view('take-quiz.result-quiz', [
+            'quiz' => $quiz->withCount('questions')->first(),
+            'correctOptionCount' => $correctOptionCount,
+            'time_taken' => Date::createFromFormat('Y-m-d H:i:s', $result->finished_at)->diff($result->started_at),
         ]);
     }
 }
