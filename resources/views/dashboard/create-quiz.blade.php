@@ -20,7 +20,7 @@
                     </div>
 
                     <!-- Main Form -->
-                    <form class="space-y-4" id="quizForm" method="post">
+                    <form class="space-y-4" id="quizForm" method="post"  enctype="multipart/form-data">
                         @csrf
                         <!-- Quiz Details Section -->
                         <div class="bg-white p-6 rounded-lg shadow-md">
@@ -30,6 +30,7 @@
                                     <label for="title" class="block text-sm font-medium text-gray-700">Quiz Title</label>
                                     <input type="text" id="title" name="title" placeholder="Quiz Title" required
                                            class="w-full px-4 py-2 border rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <input type="file" name="image"> <br><br>
                                 </div>
                                 <div>
                                     <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
@@ -63,6 +64,8 @@
                                         <label class="block text-sm font-medium text-gray-700">Question Text</label>
                                         <input name="questions[0][quiz]" type="text" required
                                                class="w-full px-4 py-2 border rounded-lg mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        <input type="file" name="image"> <br><br>
+
                                     </div>
 
                                     <div class="space-y-3" data-options-container>
@@ -80,9 +83,6 @@
                                             <button type="button" class="removeOptionBtn px-2 py-1 text-red-600 hover:text-red-800">×</button>
                                         </div>
                                         <!-- Option 2 -->
-                                    </div>
-
-                                    <div class="mt-4 flex justify-end">
                                         <button type="button" class="removeQuestionBtn text-red-600 hover:text-red-800 font-medium">
                                             Remove Question
                                         </button>

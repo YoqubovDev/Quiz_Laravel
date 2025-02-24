@@ -7,7 +7,7 @@ use App\Http\Controllers\HomeController;
 use  App\Http\Controllers\QuizController;
 use App\Http\Controllers\DashboardController;
 
-Route::get('/', [HomeController::class, 'welcome'])->name('welcome');
+Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 Route::middleware('auth')->group(function () {
