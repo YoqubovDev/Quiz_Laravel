@@ -8,8 +8,7 @@ https://documenter.getpostman.com/view/40396173/2sAYdcqrNW
 https://api.example.com/
 
 markdown
-Copy
-Edit
+
 
 ## Avtorizatsiya
 
@@ -18,8 +17,7 @@ API dan foydalanish uchun avtorizatsiya zarur. Har bir so'rovda `Authorization` 
 Authorization: Bearer YOUR_API_KEY
 
 markdown
-Copy
-Edit
+
 
 ## Endpointlar
 
@@ -35,9 +33,6 @@ Edit
 
 Authorization: Bearer YOUR_API_KEY Content-Type: application/json
 
-css
-Copy
-Edit
 
 **Javob:**
 
@@ -59,16 +54,12 @@ Tavsif: Yangi foydalanuvchi yaratadi.
 
 So'rov sarlavhalari:
 
-pgsql
-Copy
-Edit
+
 Authorization: Bearer YOUR_API_KEY
 Content-Type: application/json
 So'rov tanasi:
 
-json
-Copy
-Edit
+
 {
   "ism": "Ali",
   "familiya": "Valiyev",
@@ -77,9 +68,7 @@ Edit
 }
 Javob:
 
-json
-Copy
-Edit
+
 {
   "id": 2,
   "ism": "Ali",
@@ -97,16 +86,10 @@ Tavsif: Berilgan id ga ega foydalanuvchi ma'lumotlarini yangilaydi.
 
 So'rov sarlavhalari:
 
-pgsql
-Copy
-Edit
 Authorization: Bearer YOUR_API_KEY
 Content-Type: application/json
 So'rov tanasi:
 
-json
-Copy
-Edit
 {
   "ism": "Ali",
   "familiya": "Valiyev",
@@ -114,9 +97,6 @@ Edit
 }
 Javob:
 
-json
-Copy
-Edit
 {
   "id": 1,
   "ism": "Ali",
@@ -134,9 +114,6 @@ Tavsif: Berilgan id ga ega foydalanuvchini o'chiradi.
 
 So'rov sarlavhalari:
 
-pgsql
-Copy
-Edit
 Authorization: Bearer YOUR_API_KEY
 Content-Type: application/json
 Javob: 204 No Content
